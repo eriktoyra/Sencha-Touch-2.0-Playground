@@ -1,0 +1,63 @@
+[
+    {
+        division: 'East',
+        teams: [
+            {
+                name: 'New York Yankees',
+                league: 'AL',
+            }, {
+                name: 'Tampa Bay',
+                league: 'AL',
+            }, {
+                name: 'Boston',
+                league: 'AL',
+            }, {
+                name: 'Toronto',
+                league: 'AL',
+            }, {
+                name: 'Baltimore',
+                league: 'AL',
+            }
+        ]
+    },
+    {
+        division: 'Central',
+        teams: [
+            {
+                name: 'Detroit',
+                league: 'AL',
+                
+            }, {
+                name: 'Cleveland',
+                league: 'AL',
+            }, {
+                name: 'Chicago White Sox',
+                league: 'AL',
+            }, {
+                name: 'Kansas City',
+                league: 'AL',
+            }, {
+                name: 'Minnesota',
+                league: 'AL',
+            }                            
+        ]
+    },
+    {
+        division: 'West',
+        teams: [
+        {
+                name: 'Texas',
+                league: 'AL',
+            }, {
+                name: 'Los Angeles Angels',
+                league: 'AL',
+            }, {
+                name: 'Oakland',
+                league: 'AL',
+            }, {
+                name: 'Seattle',
+                league: 'AL',
+            }
+        ]
+    }
+]

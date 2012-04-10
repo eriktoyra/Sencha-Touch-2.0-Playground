@@ -10,127 +10,148 @@
     
     <script src="http://extjs.cachefly.net/touch/sencha-touch-2.0.0/sencha-touch-all.js" type="text/javascript"></script>
     <script type="text/javascript">
+        /**
+         * @description The main purpose of this mockup is to test how to filter a list using hierarchical data. The code is adapted from the example 
+         * "Filtering data in an Ext.List component in Sencha Touch 2" by Peter deHaan.  
+         * @see <a href="http://senchaexamples.com/2012/03/15/filtering-data-in-an-ext-list-component-in-sencha-touch-2/">Filtering data in an Ext.List component in Sencha Touch 2</a>.
+         * @author <a href="mailto:erik.toyra[at]gmail.com">Erik Töyrä</a>      
+         */
         Ext.application({
             launch: function () {
-                Ext.create('Ext.data.Store', {
-                        storeId: 'myStore',
-                        fields: ['division', 'teams'],
-                        sorters: 'teams.name',
-                        filters: [{
-                            property: 'division',
-                            value: 'West'
-                        }], // filters
-                        data: [
-                            {
-                                division: 'East',
-                                teams: [
-                                    {
-                                        name: 'New York Yankees',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Tampa Bay',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Boston',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Toronto',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Baltimore',
-                                        league: 'AL',
-                                    }
-                                ]
-                            },
-                            {
-                                division: 'Central',
-                                teams: [
-                                    {
-                                        name: 'Detroit',
-                                        league: 'AL',
-                                        
-                                    }, {
-                                        name: 'Cleveland',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Chicago White Sox',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Kansas City',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Minnesota',
-                                        league: 'AL',
-                                    }                            
-                                ]
-                            },
-                            {
-                                division: 'West',
-                                teams: [
-                                {
-                                        name: 'Texas',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Los Angeles Angels',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Oakland',
-                                        league: 'AL',
-                                    }, {
-                                        name: 'Seattle',
-                                        league: 'AL',
-                                    }
-                                ]
+                /**
+                 * Division model
+                 */
+                Ext.define("Division", {
+                    extend: 'Ext.data.Model',
+                    config: {
+                        fields: [
+                            'division'
+                        ],
+                        // Setup a hasMany relations between Division and Team
+                        hasMany: {model: 'Team', name: 'teams'},
+
+                        // Load data from teams.json into the Division model
+                        proxy: {
+                            type: 'rest',
+                            url : 'teams.json',
+                            reader: {
+                                type: 'json'
                             }
-                        ] // data
-                }); // create()
-                
+                        }
+                    }
+                });
+
+                /**
+                 * Team model
+                 */
+                Ext.define("Team", {
+                    extend: 'Ext.data.Model',
+                    config: {
+                        fields: [
+                            'name', 'league'
+                        ],
+                        // Setup a belongsTo relationship between Team and Division
+                        belongsTo: {model: 'Division'},
+                    }
+                });                
+
+                /**
+                 * Division store
+                 */
+                var divisionStore = Ext.create('Ext.data.Store', {
+                    model: "Division",
+                    storeId: 'divisionStore',
+                });
+
+                /**
+                 * Team store
+                 */
+                var teamStore = Ext.create('Ext.data.Store', {
+                    model: "Team",
+                    storeId: 'teamStore', // This is the store we will reference in our Ext.list below.
+                    fields: ['division', 'leage', 'name'],
+                });
+
+                /**
+                 * Load the Division store which holds all of the data read from teams.json. 
+                 * After the data has been loaded we add the team data to the teamStore.
+                 */
+                divisionStore.load({
+                    callback: function() {
+                        // Loop through each division and retrieve the all teams that resides as 
+                        // childs to the division. Then we add each team to the teamStore.
+                        divisionStore.each(function(division) {
+                            division.teams().each(function(team) {
+                                teamStore.add(team);
+                            });
+                        });
+                    }
+                });
+
+                /**
+                 * Create the list that should be filtered by Division and display a filtered list with Team objects.
+                 */
                 Ext.create('Ext.List', {
                     fullscreen: true,
+
                     items: [{
                         xtype: 'titlebar',
                         docked: 'top',
                         ui: 'neutral',
+
                         items: [{
                             text: 'West only',
                             handler: function () {
-                                var sto = Ext.getStore('myStore');
-                                // clear all existing filters
-                                sto.clearFilter();
-                                sto.filter('division', 'West');
-                                console.log(sto);
+                                return util.doFilter('West');
                             } // handler
                         }, {
                             text: 'Central only',
                             handler: function () {
-                                var sto = Ext.getStore('myStore');
-                                // clear all existing filters
-                                sto.clearFilter();
-                                sto.filter('division', 'Central');
-                                sto.set
-                                console.log(sto);                                
+                                return util.doFilter('Central');
                             } // handler
                         }, {
                             text: 'East only',
                             handler: function () {
-                                var sto = Ext.getStore('myStore');
-                                // clear all existing filters
-                                sto.clearFilter();
-                                sto.filter('division', 'East');
-                                console.log(sto);                                
+                                return util.doFilter('East');                               
                             } // handler
                         }, {
                             text: 'Clear filters',
                             ui: 'decline',
                             align: 'right',
                             handler: function () {
-                                Ext.getStore('myStore').clearFilter();
+                                Ext.getStore('teamStore').clearFilter();
                             } // handler
-                        }] // items (toolbar)
+                        }
+                        ] // items (toolbar)
                     }], // items (list)
-                    store: 'myStore',
-                    itemTpl: '<tpl for="teams">{name} | </tpl>'
+                    store: 'teamStore',
+                    itemTpl: '{name}, {league}',
                 }); // create()
+
+                
+                /**
+                 * Utility functions
+                 */
+                var util = (function() {
+                    var util = {};
+
+                    /**
+                     * Filter the teamStore by the passed in Division name.
+                     */
+                    util.doFilter = function(filterOption) {
+                        var store = Ext.getStore('teamStore');
+                        
+                        // Clear all existing filters first...
+                        store.clearFilter();
+
+                        // ... then apply the selected filter
+                        store.filterBy(function(record, id) {
+                                return record.getDivision().get('division') == filterOption;
+                            }, this);
+                    }
+
+                    return util;
+                })();
             } // launch
         }); // application()
     </script>
