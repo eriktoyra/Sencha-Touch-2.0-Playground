@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="http://extjs.cachefly.net/touch/sencha-touch-2.0.0/resources/css/sencha-touch.css" rel="stylesheet" type="text/css" />
+    <title>Filtering data in an Ext.List component in Sencha Touch 2</title>
+    <!-- http://senchaexamples.com/2012/03/15/filtering-data-in-an-ext-list-component-in-sencha-touch-2/ -->
+</head>
+<body>
+    
+    <script src="http://extjs.cachefly.net/touch/sencha-touch-2.0.0/sencha-touch-all.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        Ext.application({
+            launch: function () {
+                Ext.create('Ext.data.Store', {
+                        storeId: 'myStore',
+                        fields: ['division', 'teams'],
+                        sorters: 'teams.name',
+                        filters: [{
+                            property: 'division',
+                            value: 'West'
+                        }], // filters
+                        data: [
+                            {
+                                division: 'East',
+                                teams: [
+                                    {
+                                        name: 'New York Yankees',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Tampa Bay',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Boston',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Toronto',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Baltimore',
+                                        league: 'AL',
+                                    }
+                                ]
+                            },
+                            {
+                                division: 'Central',
+                                teams: [
+                                    {
+                                        name: 'Detroit',
+                                        league: 'AL',
+                                        
+                                    }, {
+                                        name: 'Cleveland',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Chicago White Sox',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Kansas City',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Minnesota',
+                                        league: 'AL',
+                                    }                            
+                                ]
+                            },
+                            {
+                                division: 'West',
+                                teams: [
+                                {
+                                        name: 'Texas',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Los Angeles Angels',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Oakland',
+                                        league: 'AL',
+                                    }, {
+                                        name: 'Seattle',
+                                        league: 'AL',
+                                    }
+                                ]
+                            }
+                        ] // data
+                }); // create()
+                
+                Ext.create('Ext.List', {
+                    fullscreen: true,
+                    items: [{
+                        xtype: 'titlebar',
+                        docked: 'top',
+                        ui: 'neutral',
+                        items: [{
+                            text: 'West only',
+                            handler: function () {
+                                var sto = Ext.getStore('myStore');
+                                // clear all existing filters
+                                sto.clearFilter();
+                                sto.filter('division', 'West');
+                                console.log(sto);
+                            } // handler
+                        }, {
+                            text: 'Central only',
+                            handler: function () {
+                                var sto = Ext.getStore('myStore');
+                                // clear all existing filters
+                                sto.clearFilter();
+                                sto.filter('division', 'Central');
+                                sto.set
+                                console.log(sto);                                
+                            } // handler
+                        }, {
+                            text: 'East only',
+                            handler: function () {
+                                var sto = Ext.getStore('myStore');
+                                // clear all existing filters
+                                sto.clearFilter();
+                                sto.filter('division', 'East');
+                                console.log(sto);                                
+                            } // handler
+                        }, {
+                            text: 'Clear filters',
+                            ui: 'decline',
+                            align: 'right',
+                            handler: function () {
+                                Ext.getStore('myStore').clearFilter();
+                            } // handler
+                        }] // items (toolbar)
+                    }], // items (list)
+                    store: 'myStore',
+                    itemTpl: '<tpl for="teams">{name} | </tpl>'
+                }); // create()
+            } // launch
+        }); // application()
+    </script>
+    
+</body>
+</html>
